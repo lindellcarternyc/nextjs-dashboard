@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormState } from "react-dom";
 import { CustomerField, InvoiceForm } from "@/app/lib/definitions";
 import {
   CheckIcon,
@@ -10,7 +11,8 @@ import {
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
 
-import { updateInvoice } from "@/app/lib/actions";
+import { InvoiceState, updateInvoice } from "@/app/lib/actions";
+import InvoiceErrors from "./invoice-errors";
 
 export default function EditInvoiceForm({
   invoice,
@@ -20,9 +22,11 @@ export default function EditInvoiceForm({
   customers: CustomerField[];
 }) {
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  const initialState: InvoiceState = { message: null, errors: {} };
+  const [state, dispatch] = useFormState(updateInvoiceWithId, initialState);
 
   return (
-    <form action={updateInvoiceWithId}>
+    <form action={dispatch} aria-labelledby="form-error">
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Invoice ID */}
         <input type="hidden" name="id" value={invoice.id} />
@@ -49,6 +53,12 @@ export default function EditInvoiceForm({
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
+          {state.errors?.customerId ? (
+            <InvoiceErrors
+              id="customer-error"
+              errors={state.errors.customerId}
+            />
+          ) : null}
         </div>
 
         {/* Invoice Amount */}
@@ -69,6 +79,9 @@ export default function EditInvoiceForm({
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
+          {state.errors?.amount ? (
+            <InvoiceErrors id="amount-error" errors={state.errors.amount} />
+          ) : null}
         </div>
 
         {/* Invoice Status */}
@@ -112,7 +125,13 @@ export default function EditInvoiceForm({
               </div>
             </div>
           </div>
+          {state.errors?.status ? (
+            <InvoiceErrors id="status-error" errors={state.errors.status} />
+          ) : null}
         </div>
+        {state.message ? (
+          <InvoiceErrors id="form-error" errors={[state.message]} />
+        ) : null}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
