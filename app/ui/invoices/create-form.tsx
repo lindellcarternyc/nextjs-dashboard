@@ -71,7 +71,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <InvoiceErrors id="amount-error" errors={state.errors.amount} />
             ) : null}
           </div>
-          s
         </div>
 
         {/* Invoice Status */}
