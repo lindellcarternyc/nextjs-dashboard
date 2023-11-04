@@ -106,8 +106,6 @@ export const updateInvoice = async (
 };
 
 export const deleteInvoice = async (id: string) => {
-  throw new Error("Failed to delete invoice.");
-
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
   } catch (error) {
